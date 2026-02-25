@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useIsAuthenticated, useMsal } from "@azure/msal-react";
 import {
     getAccessToken,
-    getUsername,
     clearSession,
     acquireAccessToken,
 } from "./config/session";

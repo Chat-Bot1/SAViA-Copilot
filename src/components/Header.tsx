@@ -1,6 +1,6 @@
 import "../styles/Header.css";
 import saviaLogo from "../assets/images/savia-logo.png";
-import { getUsername } from "../config/session"; // 👈 agregado
+
 
 interface HeaderProps {
     username: string;          // fallback (correo)
