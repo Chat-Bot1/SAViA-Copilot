@@ -1,5 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useIsAuthenticated, useMsal } from "@azure/msal-react";
+import {
+    getAccessToken,
+    getUsername,
+    clearSession,
+    acquireAccessToken,
+} from "./config/session";
 
 import ChatWindow from "./components/ChatWindow";
 import ChatInput from "./components/ChatInput";
@@ -18,30 +24,25 @@ interface Message {
     text: string;
 }
 
-const SESSION_KEY = "chatbot_session_id";
-
-const getSessionId = () => {
-    let sessionId = localStorage.getItem(SESSION_KEY);
-
-    if (!sessionId) {
-        sessionId = `SESSION_${Date.now()}`;
-        localStorage.setItem(SESSION_KEY, sessionId);
-    }
-
-    return sessionId;
-};
-
 function App() {
     /* 🔐 ENTRA ID */
     const isAuthenticated = useIsAuthenticated();
     const { instance, accounts } = useMsal();
 
-    /* 👤 USUARIO AUTENTICADO */
-    const username = accounts.length > 0
-        ? accounts[0].username
-        : "Usuario";
+    /* 👤 USUARIO */
+    const username =
+        getUsername() ||
+        (accounts.length > 0 ? accounts[0].username : "Usuario");
+
+    /* 🔑 OBTENER TOKEN UNA SOLA VEZ */
+    useEffect(() => {
+        if (isAuthenticated && accounts.length > 0 && !getAccessToken()) {
+            acquireAccessToken(instance, accounts[0]).catch(console.error);
+        }
+    }, [isAuthenticated, accounts, instance]);
 
     const handleLogout = () => {
+        clearSession();
         instance.logoutPopup().catch(console.error);
     };
 
@@ -55,15 +56,18 @@ function App() {
         try {
             setLoading(true);
 
+            const token = getAccessToken();
+
             const response = await fetch(API_URL, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    ...(token && { Authorization: `Bearer ${token}` }),
                 },
                 body: JSON.stringify({
-                    session_id: getSessionId(), // luego usaremos el token
+                    session_id: token ?? "mock-session",
                     request_id: Date.now().toString(),
-                    text: text,
+                    text,
                 }),
             });
 
@@ -117,7 +121,7 @@ function App() {
         });
     };
 
-    /* 🔀 RUTEO SIMPLE POR AUTENTICACIÓN */
+    /* 🔀 LOGIN */
     if (!isAuthenticated) {
         return <Login />;
     }
@@ -125,10 +129,7 @@ function App() {
     return (
         <div className="app">
             {/* 🧠 HEADER */}
-            <Header
-                username={username}
-                onLogout={handleLogout}
-            />
+            <Header username={username} onLogout={handleLogout} />
 
             {/* 💬 CHAT */}
             <ChatWindow messages={messages} />
