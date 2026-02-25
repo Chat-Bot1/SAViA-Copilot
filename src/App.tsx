@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useIsAuthenticated, useMsal } from "@azure/msal-react";
 import {
-    getAccessToken,
     clearSession,
     acquireAccessToken,
 } from "./config/session";
@@ -16,6 +15,7 @@ import "./App.css";
 /* 🔧 CONFIGURACIÓN */
 const USE_MOCK_API = false;
 const API_URL = import.meta.env.VITE_CHAT_API_URL;
+
 if (!API_URL) {
     throw new Error("VITE_CHAT_API_URL no está definida");
 }
@@ -42,9 +42,9 @@ function App() {
         ? email.split("@")[0]
         : email || "Usuario";
 
-    /* 🔑 OBTENER TOKEN UNA SOLA VEZ */
+    /* 🔑 OBTENER TOKEN (solo para sesión Entra, NO para API) */
     useEffect(() => {
-        if (isAuthenticated && accounts.length > 0 && !getAccessToken()) {
+        if (isAuthenticated && accounts.length > 0) {
             acquireAccessToken(instance, accounts[0]).catch(console.error);
         }
     }, [isAuthenticated, accounts, instance]);
@@ -59,21 +59,18 @@ function App() {
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
 
-    /* 🔌 LLAMADA A LA API */
+    /* 🔌 LLAMADA A LA API (SIN TOKEN) */
     const sendMessageToApi = async (text: string) => {
         try {
             setLoading(true);
-
-            const token = getAccessToken();
 
             const response = await fetch(API_URL, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    ...(token && { Authorization: `Bearer ${token}` }),
                 },
                 body: JSON.stringify({
-                    session_id: userId, // 👈 MISMO valor que se muestra
+                    session_id: userId,           // 👈 identificador único
                     request_id: Date.now().toString(),
                     text,
                 }),
@@ -85,12 +82,10 @@ function App() {
 
             const data = await response.json();
 
-            // 🟡 MODO MOCK
             if (USE_MOCK_API) {
                 return `Echo mock: ${text}`;
             }
 
-            // 🟢 MODO REAL
             if (data.status !== "Succes") {
                 throw new Error("Error de negocio");
             }
