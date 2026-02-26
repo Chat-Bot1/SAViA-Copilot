@@ -6,7 +6,6 @@ import "../styles/Login.css";
 import saviaLogo from "../assets/images/savia-logo.png";
 
 export default function Login() {
-
     useEffect(() => {
         document.body.classList.add("login-page");
         return () => document.body.classList.remove("login-page");
@@ -18,11 +17,12 @@ export default function Login() {
         try {
             const response = await instance.loginPopup(loginRequest);
 
-            // 🔐 Guardamos sesión
-            saveSession(
-                response.accessToken,
-                response.account?.username || "usuario"
-            );
+            // ⚠️ Con scopes OIDC (openid, profile) puede no haber accessToken.
+            // Usamos idToken (si viene) o string vacío y guardamos el username.
+            const tokenForStorage = (response as any)?.idToken || "";
+            const username = response.account?.username || "usuario";
+
+            saveSession(tokenForStorage, username);
 
             // 🚀 Redirigir al chat
             window.location.href = "/";

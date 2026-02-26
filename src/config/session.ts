@@ -4,15 +4,13 @@ import type {
 } from "@azure/msal-browser";
 
 /* 🔐 KEYS */
-const ACCESS_TOKEN_KEY = "access_token";
+const ACCESS_TOKEN_KEY = "access_token"; // lo conservamos para compatibilidad
 const USERNAME_KEY = "username";
-
-/* 🧠 SCOPE DESDE ENV */
-const API_SCOPE = import.meta.env.VITE_API_SCOPE;
 
 /* 💾 SESIÓN */
 export const saveSession = (accessToken: string, username: string) => {
-    localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
+    // Guardamos aunque el accessToken venga vacío (no usamos API scope)
+    localStorage.setItem(ACCESS_TOKEN_KEY, accessToken || "");
     localStorage.setItem(USERNAME_KEY, username);
 };
 
@@ -43,33 +41,16 @@ const getUserFromAccount = (account: AccountInfo): string => {
     return getUserFromEmail(email);
 };
 
-/* 🆕 ENTRA ID – OBTENER TOKEN */
+/* 🆕 ENTRA ID – "Obtener token"
+   Ya NO pedimos access token de API (no hay API scope).
+   Solo aseguramos sesión guardando el username.
+*/
 export const acquireAccessToken = async (
-    instance: IPublicClientApplication,
+    _instance: IPublicClientApplication,
     account: AccountInfo
 ): Promise<string | null> => {
-    try {
-        const response = await instance.acquireTokenSilent({
-            scopes: [API_SCOPE].filter(Boolean) as string[], // permite que API_SCOPE sea opcional
-            account,
-        });
-
-        const user = getUserFromAccount(account);
-        saveSession(response.accessToken, user);
-
-        return response.accessToken;
-
-    } catch (error) {
-        console.warn("Token silencioso falló, intentando popup", error);
-
-        const response = await instance.acquireTokenPopup({
-            scopes: [API_SCOPE].filter(Boolean) as string[],
-            account,
-        });
-
-        const user = getUserFromAccount(account);
-        saveSession(response.accessToken, user);
-
-        return response.accessToken;
-    }
+    const user = getUserFromAccount(account);
+    // Guardamos "token" vacío para no romper compatibilidad con el resto del código
+    saveSession("", user);
+    return null;
 };
