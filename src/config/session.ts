@@ -50,7 +50,7 @@ export const acquireAccessToken = async (
 ): Promise<string | null> => {
     try {
         const response = await instance.acquireTokenSilent({
-            scopes: [API_SCOPE],
+            scopes: [API_SCOPE].filter(Boolean) as string[], // permite que API_SCOPE sea opcional
             account,
         });
 
@@ -63,7 +63,7 @@ export const acquireAccessToken = async (
         console.warn("Token silencioso falló, intentando popup", error);
 
         const response = await instance.acquireTokenPopup({
-            scopes: [API_SCOPE],
+            scopes: [API_SCOPE].filter(Boolean) as string[],
             account,
         });
 
