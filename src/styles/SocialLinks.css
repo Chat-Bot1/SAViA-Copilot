@@ -1,0 +1,53 @@
+.social-links {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+  }
+  
+  .social-links a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  
+  .social-links img {
+    width: 52px;   /* tamaño original en PC */
+    height: 52px;
+    object-fit: contain;
+    opacity: 0.9;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+  }
+  
+  .social-links a:hover img {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+  
+  /* En el menú izquierdo deben quedar pegados a la izquierda */
+  .sidenav .social-links {
+    margin-left: 0;
+    justify-content: flex-start;
+  }
+  
+  /* En responsive sí más grandes */
+  @media (max-width: 768px) {
+    .social-links img {
+      width: 36px;
+      height: 36px;
+    }
+  }
+  
+  @media (max-width: 420px) {
+    .social-links img {
+      width: 40px;
+      height: 40px;
+    }
+  }
+
+  /* En el menú izquierdo deben quedar pegados a la izquierda */
+.sidenav .social-links {
+    margin-left: 0;
+    justify-content: flex-start;
+  }

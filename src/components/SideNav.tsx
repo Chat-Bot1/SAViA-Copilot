@@ -1,6 +1,8 @@
 import "../styles/SideNav.css";
 import { useTranslation } from "react-i18next";
 
+import SocialLinks from "./SocialLinks";
+
 type ViewKey = "chat" | "config";
 
 interface SideNavProps {
@@ -13,6 +15,33 @@ interface SideNavProps {
 export default function SideNav({ activeKey, isOpen, onSelect, onClose }: SideNavProps) {
   const { t } = useTranslation(["chat"]);
 
+  // return (
+  //   <>
+  //     <div
+  //       className={`overlay ${isOpen ? "overlay--show" : ""}`}
+  //       onClick={onClose}
+  //       aria-hidden={!isOpen}
+  //     />
+
+  //     <aside className={`sidenav ${isOpen ? "sidenav--open" : ""}`}>
+  //       <nav className="sidenav__nav">
+  //         <button
+  //           className={`nav-btn ${activeKey === "chat" ? "nav-btn--active" : ""}`}
+  //           onClick={() => onSelect("chat")}
+  //         >
+  //           {t("sidenavChat")}
+  //         </button>
+
+  //         <button
+  //           className={`nav-btn ${activeKey === "config" ? "nav-btn--active" : ""}`}
+  //           onClick={() => onSelect("config")}
+  //         >
+  //           {t("sidenavConfig")}
+  //         </button>
+  //       </nav>
+  //     </aside>
+  //   </>
+  // );
   return (
     <>
       <div
@@ -20,7 +49,7 @@ export default function SideNav({ activeKey, isOpen, onSelect, onClose }: SideNa
         onClick={onClose}
         aria-hidden={!isOpen}
       />
-
+  
       <aside className={`sidenav ${isOpen ? "sidenav--open" : ""}`}>
         <nav className="sidenav__nav">
           <button
@@ -29,7 +58,7 @@ export default function SideNav({ activeKey, isOpen, onSelect, onClose }: SideNa
           >
             {t("sidenavChat")}
           </button>
-
+  
           <button
             className={`nav-btn ${activeKey === "config" ? "nav-btn--active" : ""}`}
             onClick={() => onSelect("config")}
@@ -37,6 +66,11 @@ export default function SideNav({ activeKey, isOpen, onSelect, onClose }: SideNa
             {t("sidenavConfig")}
           </button>
         </nav>
+  
+        {/* Íconos abajo a la izquierda */}
+        <div className="sidenav__footer">
+          <SocialLinks />
+        </div>
       </aside>
     </>
   );

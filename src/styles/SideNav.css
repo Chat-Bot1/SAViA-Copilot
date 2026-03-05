@@ -77,3 +77,20 @@
         font-weight: 700;
     }
 }
+
+/* Para que el sidenav tenga "top" y "bottom" */
+.sidenav {
+    display: flex;
+    flex-direction: column;
+  
+    /* Esto hace que, en escritorio, el alto del menú sea similar al área del chat */
+    height: calc(100vh - 64px - 48px - 32px);
+  }
+  
+  /* Footer abajo */
+  .sidenav__footer {
+    margin-top: auto;          /* empuja el bloque hacia abajo */
+    padding-top: 12px;
+    display: flex;
+    justify-content: flex-start; /* izquierda */
+  }
