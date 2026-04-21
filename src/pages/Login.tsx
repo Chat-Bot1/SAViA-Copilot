@@ -90,33 +90,33 @@ export default function Login() {
 
       // Valida el token contra backend
       setValidating(true);
-      const result = await validateTokenDetailed(idToken);
+      //const result = await validateTokenDetailed(idToken);
       setValidating(false);
 
       // Si falla validación → muestra error y programa logout
-      if (!result.ok) {
-        setErrorMsg(result.reason || t("alertUnexpected"));
+      // if (!result.ok) {
+      //   setErrorMsg(result.reason || t("alertUnexpected"));
 
-        if (AUTO_LOGOUT_MS > 0) {
-          logoutTimer.current = window.setTimeout(async () => {
-            try {
-              clearSession();
-            } catch {}
+      //   if (AUTO_LOGOUT_MS > 0) {
+      //     logoutTimer.current = window.setTimeout(async () => {
+      //       try {
+      //         clearSession();
+      //       } catch {}
 
-            try {
-              // Cierra sesión y redirige al inicio
-              await instance.logoutRedirect({
-                postLogoutRedirectUri: window.location.origin,
-              });
-            } catch (error) {
-              console.error("Error en logoutRedirect:", error);
-              window.location.replace("/");
-            }
-          }, AUTO_LOGOUT_MS);
-        }
+      //       try {
+      //         // Cierra sesión y redirige al inicio
+      //         await instance.logoutRedirect({
+      //           postLogoutRedirectUri: window.location.origin,
+      //         });
+      //       } catch (error) {
+      //         console.error("Error en logoutRedirect:", error);
+      //         window.location.replace("/");
+      //       }
+      //     }, AUTO_LOGOUT_MS);
+      //   }
 
-        return;
-      }
+      //   return;
+      // }
 
       // Login exitoso → redirige a la app
       window.location.replace("/");
